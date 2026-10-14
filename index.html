@@ -1,0 +1,528 @@
+<title>Froilan Rodriguez</title>
+<style>
+  /* ============================================================
+     DESIGN PLAN
+     Subject: a probation & parole officer (law + criminology
+     background) who also builds the regional performance data
+     reviews for his office. The site borrows the vernacular of a
+     case file / court record — reference numbers, docket-style
+     entry log for work samples, field/value credential rows —
+     rendered as a clean, legible single page. Light mode reads as
+     paper; dark mode reads as the same record under lamplight.
+     Layout: single column, left-aligned, document-width (not
+     centered marketing hero). A fixed reference block in the header
+     stands in for a file stamp. Work samples are logged as
+     numbered case entries, which is true to how he actually filed
+     them, not decoration.
+     ============================================================ */
+  :root{
+    --bg: #F1ECE0;
+    --bg-alt: #E7E0CE;
+    --surface: #FAF7EE;
+    --text: #201C14;
+    --text-dim: #6B6355;
+    --border: #CDC3A8;
+    --accent: #8A6A2A;
+    --accent-strong: #6E5420;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #13120F;
+      --bg-alt: #1B1915;
+      --surface: #1D1B16;
+      --text: #ECE6D6;
+      --text-dim: #A39A84;
+      --border: #3A3528;
+      --accent: #D4A94E;
+      --accent-strong: #E6BE6B;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #13120F;
+    --bg-alt: #1B1915;
+    --surface: #1D1B16;
+    --text: #ECE6D6;
+    --text-dim: #A39A84;
+    --border: #3A3528;
+    --accent: #D4A94E;
+    --accent-strong: #E6BE6B;
+    color-scheme: dark;
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--serif);
+    margin: 0;
+    padding-inline: 20px;
+    padding-block: max(28px, env(safe-area-inset-top, 0px)) 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: var(--accent-strong); }
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  /* ---- nav ---- */
+  nav{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 48px;
+  }
+  nav .mark{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  nav ul{
+    list-style: none;
+    display: flex;
+    gap: 22px;
+    margin: 0; padding: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  nav a{ text-decoration: none; color: var(--text); }
+  nav a:hover{ color: var(--accent-strong); }
+
+  /* ---- hero / file header ---- */
+  .file-ref{
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    padding: 10px 14px;
+    display: inline-block;
+    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+  .file-ref b{ color: var(--text); font-weight: 500; }
+
+  h1{
+    font-family: var(--serif);
+    font-size: clamp(34px, 6vw, 52px);
+    font-weight: 600;
+    line-height: 1.08;
+    margin: 0 0 10px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .role{
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--accent-strong);
+    margin-bottom: 4px;
+  }
+  .org{
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-bottom: 26px;
+    font-style: italic;
+  }
+  .lede{
+    font-size: 19px;
+    line-height: 1.6;
+    max-width: 62ch;
+    margin-bottom: 0;
+  }
+
+  section{
+    margin-top: 72px;
+  }
+  .section-head{
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .section-head .num{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .section-head h2{
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .section-head .rule{
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- about ---- */
+  .about-grid{
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 40px;
+  }
+  @media (max-width: 620px){
+    .about-grid{ grid-template-columns: 1fr; }
+  }
+  dl.record{ margin: 0; }
+  dl.record .row{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  dl.record .row:first-child{ padding-top: 0; }
+  dl.record dt{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  dl.record dd{
+    margin: 0;
+    font-size: 15px;
+  }
+  .bio p{
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    max-width: 58ch;
+  }
+  .bio p:last-child{ margin-bottom: 0; }
+
+  /* ---- work samples / docket log ---- */
+  .entry{
+    border-top: 1px solid var(--border);
+    padding: 26px 0;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 20px;
+  }
+  .entry:last-child{ border-bottom: 1px solid var(--border); }
+  @media (max-width: 560px){
+    .entry{ grid-template-columns: 1fr; gap: 8px; }
+  }
+  .entry .tag{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    padding-top: 3px;
+  }
+  .entry .tag b{
+    display: block;
+    color: var(--accent-strong);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .entry h3{
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  .entry p{
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 0 0 10px;
+    max-width: 58ch;
+  }
+  .entry .meta{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- skills ---- */
+  .skills-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 680px){
+    .skills-grid{ grid-template-columns: 1fr; }
+  }
+  .skill-group h4{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--accent-strong);
+    margin: 0 0 12px;
+    font-weight: 500;
+  }
+  .skill-group ul{
+    list-style: none;
+    margin: 0; padding: 0;
+    font-size: 14.5px;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .skill-group li{
+    border-bottom: 1px solid var(--border);
+    padding: 7px 0;
+  }
+  .skill-group li:last-child{ border-bottom: none; }
+
+  /* ---- contact ---- */
+  .contact-box{
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 28px 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .contact-item dt{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .contact-item dd{
+    margin: 0;
+    font-size: 17px;
+  }
+  .copy-btn{
+    font-family: var(--mono);
+    font-size: 11px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 9px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .copy-btn:hover{ border-color: var(--accent); color: var(--accent-strong); }
+  .copy-btn:focus-visible, a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  footer{
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .entry, .skill-group{ transition: none; }
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Spectral:ital@1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<div class="wrap">
+
+  <nav>
+    <span class="mark">RODRIGUEZ, J.F.D.</span>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header>
+    <div class="file-ref">
+      FILE REF. <b>PPO-II / R8</b><br>
+      STATUS: <b>ACTIVE</b> &nbsp;·&nbsp; REGION: <b>VIII</b>
+    </div>
+    <h1>Jon Froilan D. Rodriguez</h1>
+    <div class="role">PROBATION AND PAROLE OFFICER II</div>
+    <div class="org">Baybay City PPO — PPA Region VIII, Department of Justice</div>
+    <p class="lede">I run probation casework and investigation reporting for a city field office, and build the data reviews that turn twelve offices' raw case logs into decisions regional leadership can act on.</p>
+  </header>
+
+  <section id="about">
+    <div class="section-head">
+      <span class="num">01</span>
+      <h2>About</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="about-grid">
+      <dl class="record">
+        <div class="row">
+          <dt>CURRENT POST</dt>
+          <dd>Probation &amp; Parole Officer II, Baybay City PPO</dd>
+        </div>
+        <div class="row">
+          <dt>REGION</dt>
+          <dd>PPA Region VIII, Department of Justice, Philippines</dd>
+        </div>
+        <div class="row">
+          <dt>LAW</dt>
+          <dd>Bachelor of Laws</dd>
+        </div>
+        <div class="row">
+          <dt>CRIMINOLOGY</dt>
+          <dd>Bachelor of Science in Criminology</dd>
+        </div>
+        <div class="row">
+          <dt>PRIOR OPERATIONS</dt>
+          <dd>TTEC Cebu · Convergys</dd>
+        </div>
+      </dl>
+      <div class="bio">
+        <p>My work sits at the intersection of casework and reporting: supervising probation and parole cases on the ground, and separately, building the regional performance reviews that compare how the region's twelve field offices are actually doing — submission timeliness, officer caseload, supervision outcomes.</p>
+        <p>Before joining the Parole and Probation Administration, I spent several years in BPO operations, which is where the comfort with data, process discipline, and clear reporting under deadline came from. Law and criminology gave me the subject matter; that background gave me the habit of turning raw case data into something a supervisor can act on in one read.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head">
+      <span class="num">02</span>
+      <h2>Work Samples</h2>
+      <span class="rule"></span>
+    </div>
+
+    <div class="entry">
+      <div class="tag"><b>ENTRY</b>01</div>
+      <div>
+        <h3>Regional Operations Performance Review</h3>
+        <p>Consolidated five datasets — PSIR court-submission timeliness, investigation caseload, officer workload, supervision carryover, and case outcomes — across 12 field offices and 42 officers into one regional report, with office-level benchmarking, a 60-day compliance tracker, and a caseload concentration analysis.</p>
+        <div class="meta">DATA PERIOD DEC 2025–JUN 2026 &nbsp;·&nbsp; 12 FIELD OFFICES &nbsp;·&nbsp; 42 OFFICERS</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="tag"><b>ENTRY</b>02</div>
+      <div>
+        <h3>Probation &amp; Parole Caseload Report</h3>
+        <p>Disposition and standing-caseload report across the same 12 field offices, breaking out terminated vs. revoked cases, parole activity, and probation plus community-service caseload by office, with small-office vs. big-office comparisons.</p>
+        <div class="meta">AS OF JUN 30, 2026 &nbsp;·&nbsp; 12 FIELD OFFICES</div>
+      </div>
+    </div>
+
+    <p style="font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-top: 18px;">Full reports available on request.</p>
+  </section>
+
+  <section id="skills">
+    <div class="section-head">
+      <span class="num">03</span>
+      <h2>Skills</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h4>CASE &amp; LEGAL OPERATIONS</h4>
+        <ul>
+          <li>Probation and parole casework</li>
+          <li>Investigation coordination</li>
+          <li>Legal documentation and court liaison</li>
+          <li>Case disposition tracking</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h4>DATA &amp; REPORTING</h4>
+        <ul>
+          <li>Caseload and compliance analysis</li>
+          <li>Regional performance reporting</li>
+          <li>Data cleaning and cross-referencing</li>
+          <li>Data visualization</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <h4>OPERATIONS BACKGROUND</h4>
+        <ul>
+          <li>Customer operations (BPO)</li>
+          <li>Process adherence under SLA</li>
+          <li>Written and verbal reporting</li>
+          <li>Deadline-driven delivery</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-head">
+      <span class="num">04</span>
+      <h2>Contact</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="contact-box">
+      <div class="contact-item">
+        <dt>EMAIL</dt>
+        <dd>
+          <span id="email-text">sadguyhasnoend@gmail.com</span>
+          <button class="copy-btn" id="copy-email" type="button">Copy</button>
+        </dd>
+      </div>
+      <div class="contact-item">
+        <dt>LOCATION</dt>
+        <dd>Baybay City, Leyte — Region VIII, Philippines</dd>
+      </div>
+      <div class="contact-item">
+        <dt>LINKEDIN</dt>
+        <dd>Add your profile URL here</dd>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Jon Froilan D. Rodriguez — Portfolio Record</span>
+    <span id="updated"></span>
+  </footer>
+
+</div>
+
+<script>
+  (function(){
+    try{
+      var d = new Date();
+      var months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+      document.getElementById('updated').textContent =
+        'UPDATED ' + months[d.getMonth()] + ' ' + d.getFullYear();
+    }catch(e){}
+
+    var btn = document.getElementById('copy-email');
+    if(btn){
+      btn.addEventListener('click', function(){
+        var text = document.getElementById('email-text').textContent;
+        function fallbackSelect(){
+          var el = document.getElementById('email-text');
+          var range = document.createRange();
+          range.selectNodeContents(el);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(function(){
+            btn.textContent = 'Copied';
+            setTimeout(function(){ btn.textContent = 'Copy'; }, 1500);
+          }).catch(fallbackSelect);
+        } else {
+          fallbackSelect();
+        }
+      });
+    }
+  })();
+</script>
